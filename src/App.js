@@ -81,14 +81,37 @@ function App() {
   ];
 
   const addToCart = (product) => {
-    setCart([...cart, product]);
+    const updatedCart = [...cart];
+    const existingProductIndex = updatedCart.findIndex((item) => item.id === product.id);
+  
+    if (existingProductIndex !== -1) {
+      // If the product already exists in the cart, clone it and increase the quantity
+      const updatedProduct = { ...updatedCart[existingProductIndex] };
+      updatedProduct.quantity += 1;
+      updatedCart[existingProductIndex] = updatedProduct;
+    } else {
+      // If the product doesn't exist in the cart, add it with a quantity of 1
+      product.quantity = 1;
+      updatedCart.push(product);
+    }
+  
+    setCart(updatedCart);
     setItemCount(itemCount + 1);
   };
-
+  
   const removeFromCart = (product) => {
-    const updatedCart = cart.filter((item) => item.id !== product.id);
-    setCart(updatedCart);
-    setItemCount(itemCount - 1);
+    const updatedCart = [...cart];
+    const existingProduct = updatedCart.find((item) => item.id === product.id);
+  
+    if (existingProduct) {
+      existingProduct.quantity -= 1;
+      if (existingProduct.quantity === 0) {
+        const index = updatedCart.indexOf(existingProduct);
+        updatedCart.splice(index, 1);
+      }
+      setCart(updatedCart);
+      setItemCount(itemCount - 1);
+    }
   };
 
   return (
